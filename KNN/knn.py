@@ -61,6 +61,8 @@ def classify0(inX, dataSet, labels, k):
 	sortedClassCount = sorted(classCount.iteritems(), key=operator.itemgetter(1), reverse=True)
 	print('sortedClassCount')
 	print(sortedClassCount)
+
+	
 	return sortedClassCount[0][0]
 
 	
