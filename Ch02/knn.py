@@ -9,6 +9,9 @@ def createDataSet():
 	return group, labels
 
 
+'''
+k-近邻算法
+'''
 def classify0(inX, dataSet, labels, k):
 	dataSetSize = dataSet.shape[0]
 	print('dataSet')
@@ -62,15 +65,29 @@ def classify0(inX, dataSet, labels, k):
 	print('sortedClassCount')
 	print(sortedClassCount)
 
-	
 	return sortedClassCount[0][0]
 
-	
-	
+
+def file2matrix(filename):
+	fr = open(filename)
+	'''
+	得到文件行数
+	'''
+	arrayOLines = fr.readlines()
+	numberOfLines = len(arrayOLines)
+
+	'''
+	创建 NumPy 矩阵
+	'''
+	# zeros((a,b)) 创建二维数组
+	returnMat = zeros((numberOfLines, 3))
 
 
 
-
+'''
 group, labels = createDataSet()
 
 classify0([0, 0], group, labels, 3)
+'''
+
+file2matrix('/Users/gao/Documents/MachineLearning/Ch02/datingTestSet.txt')
