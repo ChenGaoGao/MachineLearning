@@ -159,7 +159,8 @@ def handwritingClassTest():
 
 		hwLabels.append(classNumStr)
 		
-		trainingMat[i, :] = img2vector(trainingFolder + '/' + fileNameStr)
+		trainingMat[i, :] = img2vector(
+			trainingFolder + '/' + fileNameStr)
 	
 	testFolder = pwd + '/Ch02/testDigits'
 	testFileList = os.listdir(testFolder)
@@ -171,8 +172,10 @@ def handwritingClassTest():
 		fileStr = fileNameStr.split('.')[0]
 		classNumStr = int(fileStr.split('_')[0])
 
-		vectorUnderTest = img2vector(testFolder + '/' + fileNameStr)
-		classifierResult = classify0(vectorUnderTest, trainingMat, hwLabels, 3)
+		vectorUnderTest = img2vector(
+			testFolder + '/' + fileNameStr)
+		classifierResult = classify0(
+			vectorUnderTest, trainingMat, hwLabels, 3)
 		print classifierResult, classNumStr
 		if classifierResult != classNumStr:
 			errorCount += 1.0
@@ -218,9 +221,11 @@ def handwritingClassTest():
 '''
 读取图像，并将图像转化为向量
 '''
-print img2vector('/Users/gao/Documents/MachineLearning/Ch02/testDigits/0_0.txt')
+# pwd = os.getcwd()
+# trainingFile = pwd + '/Ch02/testDigits/0_0.txt'
+# print img2vector(trainingFile)
 
 '''
 手写数字识别系统 测试代码
 '''
-handwritingClassTest()
+# handwritingClassTest()
