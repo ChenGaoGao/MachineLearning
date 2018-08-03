@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from numpy import *
 import operator
+import os
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -28,10 +29,10 @@ def classify0(inX, dataSet, labels, k):
 	# tile(parameter1, parameter2)按照 参数2 的规则复制 参数1 
 	diffMat = tile(inX, (dataSetSize, 1)) - dataSet
 	# **2表示平方
-	sqDiffMat = diffMat **2
+	sqDiffMat = diffMat ** 2
 	# sum()普通求和  sum(axis=1)将一个矩阵的每一行向量相加
 	sqDistances = sqDiffMat.sum(axis=1)
-	distances = sqDistances **0.5
+	distances = sqDistances ** 0.5
 
 	'''
 	对距离排序
@@ -57,6 +58,8 @@ def file2matrix(filename):
 	'''
 	得到文件行数
 	'''
+	# readline() 方法用于从文件读取整行，包括 "\n" 字符
+	# readlines() 方法用于读取所有行(直到结束符 EOF)并返回列表
 	arrayOLines = fr.readlines()
 	numberOfLines = len(arrayOLines)
 
@@ -75,6 +78,7 @@ def file2matrix(filename):
 		returnMat[index, :] = listFromLine[0 : 3]
 		classLabelVector.append(int(listFromLine[-1]))
 		index += 1
+
 	return returnMat, classLabelVector
 
 
@@ -97,6 +101,9 @@ def autoNorm(dataSet):
 	return normDataSet, ranges, minVals
 
 
+'''
+算法的测试代码
+'''
 def datingClassTest():
 	hoRaio = 0.10
 	datingDataMat, datingLabels = file2matrix(
@@ -117,26 +124,103 @@ def datingClassTest():
 
 
 '''
-group, labels = createDataSet()
-
-classify0([0, 0], group, labels, 3)
+读取图像，并将图像转化为向量
 '''
+def img2vector(filename):
+	returnVector = zeros((1, 1024))
+	fr = open(filename)
+	for i in range(32):
+		lineStr = fr.readline()
+		for j in range(32):
+			returnVector[0, 32*i + j] = int(lineStr[j])
+	
+	return returnVector
 
 
 '''
-fig = plt.figure()
-# add_subplot(349) 参数349的意思是：将画布分割成3行4列，
-# 图像画在从左到右从上到下的第9块
-ax = fig.add_subplot(121)
-# scatter(x, y, s, c...) x、y 坐标; s 点的大小;  c 颜色;
-ax.scatter(datingDataMat[:, 1], datingDataMat[:, 2],
- 15.0*array(datingLabels), 15.0*array(datingLabels))
-
-ax = fig.add_subplot(122)
-ax.scatter(datingDataMat[:, 0], datingDataMat[:, 1],
- 15.0*array(datingLabels), 15.0*array(datingLabels))
-
-plt.show()
+手写数字识别系统 测试代码
 '''
+def handwritingClassTest():
+	hwLabels = []
+	# listdir() 返回指定的文件夹包含的文件或文件夹的名字的列表
+	#当前文件的路径
+	pwd = os.getcwd()
+	trainingFolder = pwd + '/Ch02/trainingDigits'
+	trainingFileList = os.listdir(trainingFolder)
+	m = len(trainingFileList)
+	trainingMat = zeros((m, 1024))
+	for i in range(m):
+		'''
+		从文件名解析分类数字
+		'''
+		fileNameStr = trainingFileList[i]
+		fileStr = fileNameStr.split('.')[0]
+		classNumStr = int(fileStr.split('_')[0])
 
-datingClassTest()
+		hwLabels.append(classNumStr)
+		
+		trainingMat[i, :] = img2vector(trainingFolder + '/' + fileNameStr)
+	
+	testFolder = pwd + '/Ch02/testDigits'
+	testFileList = os.listdir(testFolder)
+
+	errorCount = 0.0
+	mTest = len(testFileList)
+	for i in range(mTest):
+		fileNameStr = testFileList[i]
+		fileStr = fileNameStr.split('.')[0]
+		classNumStr = int(fileStr.split('_')[0])
+
+		vectorUnderTest = img2vector(testFolder + '/' + fileNameStr)
+		classifierResult = classify0(vectorUnderTest, trainingMat, hwLabels, 3)
+		print classifierResult, classNumStr
+		if classifierResult != classNumStr:
+			errorCount += 1.0
+	
+	print errorCount, errorCount / float(mTest)
+
+
+
+
+'''
+简单测试
+'''
+# group, labels = createDataSet()
+
+# classify0([0, 0], group, labels, 3)
+
+
+
+'''
+画点
+'''
+# fig = plt.figure()
+# # add_subplot(349) 参数349的意思是：将画布分割成3行4列，
+# # 图像画在从左到右从上到下的第9块
+# ax = fig.add_subplot(121)
+# # scatter(x, y, s, c...) x、y 坐标; s 点的大小;  c 颜色;
+# ax.scatter(datingDataMat[:, 1], datingDataMat[:, 2],
+#  15.0*array(datingLabels), 15.0*array(datingLabels))
+
+# ax = fig.add_subplot(122)
+# ax.scatter(datingDataMat[:, 0], datingDataMat[:, 1],
+#  15.0*array(datingLabels), 15.0*array(datingLabels))
+
+# plt.show()
+
+
+'''
+算法的测试代码
+'''
+# datingClassTest()
+
+
+'''
+读取图像，并将图像转化为向量
+'''
+print img2vector('/Users/gao/Documents/MachineLearning/Ch02/testDigits/0_0.txt')
+
+'''
+手写数字识别系统 测试代码
+'''
+handwritingClassTest()
