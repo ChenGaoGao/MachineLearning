@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from math import log
+import operator
 
 
 '''
@@ -11,7 +12,7 @@ def createDataSet():
         [1, 1, 'yes'],
         [1, 0, 'no'],
         [0, 1, 'no'],
-        [0, 1, 'no'] ]
+        [0, 1, 'no'] ] 
     labels = ['no surfacing', 'flippers']
 
     return dataSet, labels
@@ -84,17 +85,69 @@ def chooseBestFeatureToSplit(dataSet):
 
 
 
+'''
+递归构建决策树 - 选出 出现次数最多的分类
+'''
+def majorityCnt(classList):
+    classCount = {}
+    for vote in classList:
+        if vote not in classCount.keys():
+            classCount[vote] = 0
+        classCount[vote] += 1
+    sortedClassCount = sorted(
+        classCount.iteritems(),
+        key = operator.itemgetter(1),
+        reverse = True)
+    return sortedClassCount[0][0]
+
+
+
+'''
+递归构建决策树 -  创建数(决策树)
+'''
+def createTree(dataSet, labels):
+    classList = [example[-1] for example in dataSet]
+    # 第一个停止条件：所有类标签完全相同 直接返回改类标签
+    if classList.count(classList[0]) == len(classList):
+        print '类别完全相同', classList
+        return classList
+    
+    # 第二个停止条件：使用完了所有特征，仍不能划分仅包含唯一类别的分组，
+    #              返回出现得多的
+    if len(dataSet[0]) == 1:
+        print '类别不完全相同', majorityCnt(classList)
+        return majorityCnt(classList)
+
+
+    bestFeat = chooseBestFeatureToSplit(dataSet)
+    bestFeatLabel = labels[bestFeat]
+    myTree = {bestFeatLabel: {}}
+    del(labels[bestFeat])
+
+    featValues = [example[bestFeat] for example in dataSet]
+    uniqueVals = set(featValues)
+    for value in uniqueVals:
+        subLabels = labels[:]
+        splitedDataSet = splitDataSet(dataSet, bestFeat, value)
+        myTree[bestFeatLabel][value] = createTree(splitedDataSet, subLabels)
+
+    return myTree
 
 
 
 
 
 dataSet, labels = createDataSet()
-print dataSet
+print 'dataSet', dataSet
 
 # print calcShannonEnt(dataSet)
 
 # print splitDataSet(dataSet, 1, 1)
 # print splitDataSet(dataSet, 1, 0)
 
-print chooseBestFeatureToSplit(dataSet)
+# print chooseBestFeatureToSplit(dataSet)
+
+# classList = [example[-1] for example in dataSet]
+# print majorityCnt(classList)
+
+print createTree(dataSet, labels)

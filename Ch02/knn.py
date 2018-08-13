@@ -44,8 +44,10 @@ def classify0(inX, dataSet, labels, k):
 		voteIlabel = labels[sortedDistIndicies[i]]
 		classCount[voteIlabel] = classCount.get(voteIlabel, 0) + 1
 
-	sortedClassCount = sorted(classCount.iteritems(),
-	 key=operator.itemgetter(1), reverse=True)
+	sortedClassCount = sorted(
+		classCount.iteritems(),
+		key = operator.itemgetter(1),
+		reverse = True)
 
 	return sortedClassCount[0][0]
 
