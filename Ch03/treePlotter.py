@@ -10,32 +10,6 @@ decisionNode = dict(boxstyle = 'sawtooth', fc = '0.8')
 leafNode = dict(boxstyle = 'round4', fc = '0.8')
 arrowArgs = dict(arrowstyle = '<-')
 
-def plotNode(nodeText, centerPt, parentPt, nodeType):
-    # https://blog.csdn.net/helunqu2017/article/details/78659490
-    createPlot.ax1.annotate(
-        nodeText,
-        xy = parentPt,
-        xycoords = 'axes fraction',
-        xytext = centerPt,
-        textcoords = 'axes fraction',
-        va = 'center',
-        ha = 'center',
-        bbox = nodeType,
-        arrowprops = arrowArgs )
-
-def createPlot():
-    # https://blog.csdn.net/admin_maxin/article/details/80667671
-    fig = plt.figure(num = 1, facecolor = 'white')
-    fig.clf()
-    # ax1 是 createPlot() 函数的属性;
-    # ax1 是 Axes 的缩写，表示子图
-    # subplot() 创建子图
-    # https://blog.csdn.net/gatieme/article/details/61416645
-    createPlot.ax1 = plt.subplot(111, frameon = True)
-    plotNode('a decision node', (0.5, 0.1), (0.1, 0.5), decisionNode)
-    plotNode('a leaf node', (0.8, 0.1), (0.3, 0.8), leafNode)
-    plt.show() 
-
 
 '''
 数据源
@@ -67,7 +41,6 @@ def getNumLeafs(myTree):
     firstStr = myTree.keys()[0]
     secondDict = myTree[firstStr]
     for key in secondDict.keys():
-        print secondDict[key]
         if type(secondDict[key]).__name__ == 'dict':
             numLeafs += getNumLeafs(secondDict[key])
         else:
@@ -97,7 +70,25 @@ def getTreeDepth(myTree):
 
 
 '''
-在父节点间 填充文本信息
+画节点
+'''
+def plotNode(nodeText, centerPt, parentPt, nodeType):
+    # https://blog.csdn.net/helunqu2017/article/details/78659490
+    createPlot.ax1.annotate(
+        nodeText,
+        xy = parentPt,
+        xycoords = 'axes fraction',
+        xytext = centerPt,
+        textcoords = 'axes fraction',
+        va = 'center',
+        ha = 'center',
+        bbox = nodeType,
+        arrowprops = arrowArgs )
+
+
+
+'''
+在父子节点间 填充文本信息
 '''
 def plotMinText(cntrPt, parentPt, txtString):
     xMid = (parentPt[0] - cntrPt[0]) / 2.0 + cntrPt[0]
@@ -115,10 +106,40 @@ def plotTree(myTree, parentPt, nodeText):
     depth = getTreeDepth(myTree)
 
     firstStr = myTree.keys()[0]
-    tmpTotalW = 1.0 + float(numLeafs)) / 2.0 / plotTree.totalW
-    cntrPt = (plotTree.xOff + tmpTotalW, plotTree.yOff)
+    # tmpTotalW = 1.0 + float(numLeafs)) / 2.0 / plotTree.totalW
+    # cntrPt = (plotTree.xOff + tmpTotalW, plotTree.yOff)
+
+    # 标记子节点属性值
+    # plotMinText(cntrPt, parentPt, nodeText)
+    # plotNode(firstStr, cntrPt, parentPt, decisionNode)
     
 
 
 
-print getNumLeafs(retrieveTree(1))
+'''
+画图像
+'''
+def createPlot(inTree):
+    # https://blog.csdn.net/admin_maxin/article/details/80667671
+    fig = plt.figure(num = 1, facecolor = 'white')
+    fig.clf()
+    # ax1 是 createPlot() 函数的属性;
+    # ax1 是 Axes 的缩写，表示子图
+    # subplot() 创建子图
+    # https://blog.csdn.net/gatieme/article/details/61416645
+    # xticks yticks 表示x，y轴取值，为空就是木有
+    # axprops = dict(xticks = [], yticks = [])
+    # createPlot.ax1 = plt.subplot(111, frameon = True, **axprops)
+    createPlot.ax1 = plt.subplot(111, frameon = True)
+
+    plotTree.totalW = float(getNumLeafs(inTree))
+    plotTree.totalD = float(getTreeDepth(inTree))
+    plotTree.xOff = - 0.5 / plotTree.totalD
+    plotTree.yOff = 1.0
+    plotTree(inTree, (0.5, 1.0), '')
+    
+    plt.show() 
+
+
+inTree = retrieveTree(1)
+createPlot(inTree)
