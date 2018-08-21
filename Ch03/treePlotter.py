@@ -106,12 +106,30 @@ def plotTree(myTree, parentPt, nodeText):
     depth = getTreeDepth(myTree)
 
     firstStr = myTree.keys()[0]
-    # tmpTotalW = 1.0 + float(numLeafs)) / 2.0 / plotTree.totalW
-    # cntrPt = (plotTree.xOff + tmpTotalW, plotTree.yOff)
-
+    tmpTotalW = (1.0 + float(numLeafs)) / 2.0 / plotTree.totalW
+    cntrPt = (plotTree.xOff + tmpTotalW, plotTree.yOff)
     # 标记子节点属性值
-    # plotMinText(cntrPt, parentPt, nodeText)
-    # plotNode(firstStr, cntrPt, parentPt, decisionNode)
+    plotMinText(cntrPt, parentPt, nodeText)
+    plotNode(firstStr, cntrPt, parentPt, decisionNode)
+
+    secondDict = myTree[firstStr]
+    plotTree.yOff = plotTree.yOff - 1.0 / plotTree.totalD
+    for key in secondDict.keys():
+        if type(secondDict[key]).__name__ == 'dict':
+            plotTree(secondDict[key], cntrPt, str(key))
+        else:
+            plotTree.xOff = plotTree.xOff + 1.0 / plotTree.totalW
+            plotNode(
+                secondDict[key], 
+                (plotTree.xOff, plotTree.yOff),
+                cntrPt,
+                leafNode)
+            plotMinText(
+                (plotTree.xOff, plotTree.yOff),
+                cntrPt, 
+                str(key))
+
+    plotTree.yOff = plotTree.yOff + 1.0 / plotTree.totalD
     
 
 
@@ -134,12 +152,12 @@ def createPlot(inTree):
 
     plotTree.totalW = float(getNumLeafs(inTree))
     plotTree.totalD = float(getTreeDepth(inTree))
-    plotTree.xOff = - 0.5 / plotTree.totalD
+    plotTree.xOff = - 0.5 / plotTree.totalW
     plotTree.yOff = 1.0
     plotTree(inTree, (0.5, 1.0), '')
     
     plt.show() 
 
 
-inTree = retrieveTree(1)
+inTree = retrieveTree(0)
 createPlot(inTree)
